@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/HARDWARE/CAN/can.c" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/HARDWARE/CAN/can.h" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/SYSTEM/usart/usart.c" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/SYSTEM/usart/usart.h" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/USER/main.c" charset="GB2312" />
+    <file url="file://$PROJECT_DIR$/../实验4 串口实验/USER/main.c" charset="GB2312" />
+  </component>
+</project>
