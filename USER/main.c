@@ -3,10 +3,10 @@
 #include "key.h"
 #include "sys.h"
 #include "lcd.h"
-#include "usart.h"	 
-#include "can.h" 
- 
-  
+#include "usart.h"
+#include "can.h"
+
+
 /************************************************
  ALIENTEK战舰STM32开发板实验26
  CAN通信实验
@@ -39,12 +39,12 @@
 
 	CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
 
- 	POINT_COLOR=RED;//设置字体为红色 
-	LCD_ShowString(60,50,200,16,16,"WarShip STM32");	
-	LCD_ShowString(60,70,200,16,16,"CAN TEST");	
+ 	POINT_COLOR=RED;//设置字体为红色
+	LCD_ShowString(60,50,200,16,16,"WarShip STM32");
+	LCD_ShowString(60,70,200,16,16,"CAN TEST");
 	LCD_ShowString(60,90,200,16,16,"ATOM@ALIENTEK");
 	LCD_ShowString(60,110,200,16,16,"2015/1/15");
-	LCD_ShowString(60,130,200,16,16,"LoopBack Mode");	 
+	LCD_ShowString(60,130,200,16,16,"LoopBack Mode");
 	LCD_ShowString(60,150,200,16,16,"KEY0:Send WK_UP:Mode");//显示提示信息		
 	POINT_COLOR=BLUE;//设置字体为蓝色	  
 	LCD_ShowString(60,170,200,16,16,"Count:");			//显示当前计数值	
@@ -56,14 +56,19 @@
 	{
 		key=KEY_Scan(0);
 
-		if(key==KEY0_PRES)//KEY0按下,发送一次数据
+		if((USART_RX_STA&0x8000) && key==KEY0_PRES)
 		{
+			len=USART_RX_STA&0x3fff;   //得到此次接收到的数据长度
+			printf("\r\n您发送的消息为:\r\n\r\n");
+
 			for(i=0;i<8;i++)
 			{
 				if(i<4)LCD_ShowxNum(60+i*32,210,USART_RX_BUF[i],3,16,0X80);	//显示数据
 				else LCD_ShowxNum(60+(i-4)*32,230,USART_RX_BUF[i],3,16,0X80);	//显示数据
- 			}
+			}
 
+			printf("\r\n\r\n");//插入换行
+			USART_RX_STA=0;
 
 			/**
 			 * 将usartbuf中的数据发送给can端
@@ -72,25 +77,26 @@
 
 
 			if(res)LCD_ShowString(60+80,190,200,16,16,"Failed");		//提示发送失败
-			else LCD_ShowString(60+80,190,200,16,16,"OK    ");	 		//提示发送成功								   
+			else LCD_ShowString(60+80,190,200,16,16,"OK    ");
 		}
+
 
 		/**
 		 * 这块上键控制模式变换
 		 */
 		else if(key==WKUP_PRES)//WK_UP按下，改变CAN的工作模式
-		{	   
+		{
 			mode=!mode;
-  			CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,mode);//CAN普通模式初始化, 波特率500Kbps 
+  			CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,mode);//CAN普通模式初始化, 波特率500Kbps
 			POINT_COLOR=RED;//设置字体为红色 
 			if(mode==0)//普通模式，需要2个开发板
 			{
-				LCD_ShowString(60,130,200,16,16,"Nnormal Mode ");	    
+				LCD_ShowString(60,130,200,16,16,"Nnormal Mode ");
 			}else //回环模式,一个开发板就可以测试了.
 			{
  				LCD_ShowString(60,130,200,16,16,"LoopBack Mode");
 			}
- 			POINT_COLOR=BLUE;//设置字体为蓝色 
+ 			POINT_COLOR=BLUE;//设置字体为蓝色
 		}
 
 
@@ -104,10 +110,10 @@
 
 
         if(key)//接收到有数据
-		{			
+		{
 			LCD_Fill(60,270,130,310,WHITE);//清除之前的显示
  			for(i=0;i<key;i++)
-			{									    
+			{
 				if(i<4)LCD_ShowxNum(60+i*32,270,canbuf[i],3,16,0X80);	//显示数据
 				else LCD_ShowxNum(60+(i-4)*32,290,canbuf[i],3,16,0X80);	//显示数据
 				USART_SendData(USART1, canbuf[i]);//向串口1发送数据
@@ -115,7 +121,7 @@
 		}
 
 
-		t++; 
+		t++;
 		delay_ms(10);
 		if(t==20)
 		{
@@ -123,7 +129,7 @@
 			t=0;
 			cnt++;
 			LCD_ShowxNum(60+48,170,cnt,3,16,0X80);	//显示数据
-		}		   
+		}
 	}
 }
 
