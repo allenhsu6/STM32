@@ -59,7 +59,15 @@
 				if(i<4)LCD_ShowxNum(60+i*32,210,canbuf[i],3,16,0X80);	//显示数据
 				else LCD_ShowxNum(60+(i-4)*32,230,canbuf[i],3,16,0X80);	//显示数据
  			}
-			res=Can_Send_Msg(canbuf,8);//发送8个字节 
+
+			res=Can_Send_Msg(canbuf,8);//发送8个字节
+
+			/**
+			 * 将usartbuf中的数据发送给can端
+			 */
+			Can_Send_Msg(USART_RX_BUF,8);
+
+			
 			if(res)LCD_ShowString(60+80,190,200,16,16,"Failed");		//提示发送失败
 			else LCD_ShowString(60+80,190,200,16,16,"OK    ");	 		//提示发送成功								   
 		}
@@ -85,7 +93,16 @@
 
 
 		key=Can_Receive_Msg(canbuf);  // 这个操作使得数据存放在canbuf中，并返回是否接受成功标志key
-		if(key)//接收到有数据
+
+		/**
+		 * 像串口发送canbuf中的数据
+		 */
+        for (int j = 0; j < 8; ++j) {
+            USART_SendData(USART1, canbuf[i]);//向串口1发送数据
+        }
+
+
+        if(key)//接收到有数据
 		{			
 			LCD_Fill(60,270,130,310,WHITE);//清除之前的显示
  			for(i=0;i<key;i++)
