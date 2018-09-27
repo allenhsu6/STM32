@@ -19,13 +19,15 @@
 
 
  int main(void)
- {	 
+ {
+ 	// 必须在前面定义
 		u8 key;
 	u8 i=0,t=0;
 	u8 cnt=0;
-	u8 canbuf[8];  // u8是按照字节读入的
+	u8 canbuf[8];  // u8是按照字节读入的  canbuf是个数组
 	u8 res;
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+
 
 	delay_init();	    	 //延时函数初始化	  
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
@@ -33,7 +35,8 @@
 	LED_Init();		  		//初始化与LED连接的硬件接口
 	LCD_Init();			   	//初始化LCD	
 	KEY_Init();				//按键初始化		 	
-   
+
+
 	CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
 
  	POINT_COLOR=RED;//设置字体为红色 
@@ -47,7 +50,9 @@
 	LCD_ShowString(60,170,200,16,16,"Count:");			//显示当前计数值	
 	LCD_ShowString(60,190,200,16,16,"Send Data:");		//提示发送的数据	
 	LCD_ShowString(60,250,200,16,16,"Receive Data:");	//提示接收到的数据		
- 	while(1)
+
+
+	while(1)
 	{
 		key=KEY_Scan(0);
 
@@ -55,19 +60,17 @@
 		{
 			for(i=0;i<8;i++)
 			{
-				canbuf[i]=cnt+i;//填充发送缓冲区  自己编的数字放在canbuf中
-				if(i<4)LCD_ShowxNum(60+i*32,210,canbuf[i],3,16,0X80);	//显示数据
-				else LCD_ShowxNum(60+(i-4)*32,230,canbuf[i],3,16,0X80);	//显示数据
+				if(i<4)LCD_ShowxNum(60+i*32,210,USART_RX_BUF[i],3,16,0X80);	//显示数据
+				else LCD_ShowxNum(60+(i-4)*32,230,USART_RX_BUF[i],3,16,0X80);	//显示数据
  			}
 
-			res=Can_Send_Msg(canbuf,8);//发送8个字节
 
 			/**
 			 * 将usartbuf中的数据发送给can端
 			 */
-			Can_Send_Msg(USART_RX_BUF,8);
+			res = Can_Send_Msg(USART_RX_BUF,8);
 
-			
+
 			if(res)LCD_ShowString(60+80,190,200,16,16,"Failed");		//提示发送失败
 			else LCD_ShowString(60+80,190,200,16,16,"OK    ");	 		//提示发送成功								   
 		}
@@ -97,9 +100,7 @@
 		/**
 		 * 像串口发送canbuf中的数据
 		 */
-        for (int j = 0; j < 8; ++j) {
-            USART_SendData(USART1, canbuf[i]);//向串口1发送数据
-        }
+
 
 
         if(key)//接收到有数据
@@ -109,7 +110,8 @@
 			{									    
 				if(i<4)LCD_ShowxNum(60+i*32,270,canbuf[i],3,16,0X80);	//显示数据
 				else LCD_ShowxNum(60+(i-4)*32,290,canbuf[i],3,16,0X80);	//显示数据
- 			}
+				USART_SendData(USART1, canbuf[i]);//向串口1发送数据
+			}
 		}
 
 
