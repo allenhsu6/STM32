@@ -72,11 +72,11 @@ struct COM{
 				msg->head2 = USART_RX_BUF[1];
 				msg->GPS_velocity = (float)USART_RX_BUF[2];
 				msg->AIM_velocity = (float)USART_RX_BUF[6];
-				msg->CarModel = USART_RX_BUF[10];
-				msg->BodyModel = USART_RX_BUF[12];
-				msg->Serial = USART_RX_BUF[14];
-				msg->SystemState = USART_RX_BUF[18];
-				msg->BrakeSingal = USART_RX_BUF[20];
+				msg->CarModel = (short int)USART_RX_BUF[10];
+				msg->BodyModel = (short int)USART_RX_BUF[12];
+				msg->Serial = (unsigned int)USART_RX_BUF[14];
+				msg->SystemState = (short int)USART_RX_BUF[18];
+				msg->BrakeSingal = (short int)USART_RX_BUF[20];
 			}
 
 			for(i=0;i<8;i++)
