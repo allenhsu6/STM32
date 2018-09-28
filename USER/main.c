@@ -64,10 +64,12 @@ struct COM{
 		if((USART_RX_STA&0x8000) && key==KEY0_PRES)
 		{
 			len=USART_RX_STA&0x3fff;   //得到此次接收到的数据长度
-			printf("\r\n您发送的消息为:%d\r\n\r\n",len);  //  查看所谓数据长度是指字节数吗？
+			printf("\r\n您发送的消息为:%d\r\n\r\n",len);  //  数据长度
 
 			// 总共22个 存放在msg结构体中
 			if(len == 22){
+				printf("\r\n成功");  //
+
 				msg->head1 = USART_RX_BUF[0];
 				msg->head2 = USART_RX_BUF[1];
 				msg->GPS_velocity = (float)USART_RX_BUF[2];
@@ -81,8 +83,8 @@ struct COM{
 
 			for(i=0;i<8;i++)
 			{
-				if(i<4)LCD_ShowxNum(60+i*32,210,USART_RX_BUF[i],3,16,0X80);	//显示数据
-				else LCD_ShowxNum(60+(i-4)*32,230,USART_RX_BUF[i],3,16,0X80);	//显示数据
+				if(i<4)LCD_ShowxNum(60,210,msg->head2,3,16,0X80);	//显示数据
+				else LCD_ShowxNum(60,230,msg->head1,3,16,0X80);	//显示数据
 			}
 
 			printf("\r\n\r\n");//插入换行
@@ -132,9 +134,10 @@ struct COM{
 			LCD_Fill(60,270,130,310,WHITE);//清除之前的显示
  			for(i=0;i<key;i++)
 			{
+				USART_SendData(USART1, canbuf[i]);//向串口1发送数据
+
 				if(i<4)LCD_ShowxNum(60+i*32,270,canbuf[i],3,16,0X80);	//显示数据
 				else LCD_ShowxNum(60+(i-4)*32,290,canbuf[i],3,16,0X80);	//显示数据
-				USART_SendData(USART1, canbuf[i]);//向串口1发送数据
 			}
 		}
 
