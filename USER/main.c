@@ -6,16 +6,24 @@
 #include "usart.h"
 #include "can.h"
 
+typedef struct COM *Massage;
 
-/************************************************
- ALIENTEK战舰STM32开发板实验26
- CAN通信实验
- 技术支持：www.openedv.com
- 淘宝店铺：http://eboard.taobao.com 
- 关注微信公众平台微信号："正点原子"，免费获取STM32资料。
- 广州市星翼电子科技有限公司  
- 作者：正点原子 @ALIENTEK
-************************************************/
+struct COM{
+
+	unsigned char head1; // 0xAA   									1 byte
+	unsigned char head2; // 0x55
+	float GPS_velocity; // gps返回的车辆当前真实速度，用以显示			4 byte
+	float AIM_velocity; // 通过计算得出的速度目标值					4 byte
+	short int CarModel; // 0：无人状态 1：有人状态 显示				2 byte
+	short int BodyModel; // 0为直线赛 1为8字绕环 2为高速循迹 显示		2 byte
+	unsigned int Serial; 		// 消息列							4 byte
+	short int SystemState; // 上位机状态， 用于鸣笛					2 byte
+	short int BrakeSingal; // 刹车灯信号， 用于显示					2 byte
+	unsigned char end1;  // 回车										不用管
+	unsigned char end2;  // 换行
+
+};
+
 
 
  int main(void)
@@ -27,9 +35,10 @@
 	u8 canbuf[8];  // u8是按照字节读入的  canbuf是个数组
 	u8 res;
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+	Massage msg; // COM口传入的结构体指针
 
 
-	delay_init();	    	 //延时函数初始化	  
+	delay_init();	    	//延时函数初始化
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
 	uart_init(115200);	 	//串口初始化为115200
 	LED_Init();		  		//初始化与LED连接的硬件接口
@@ -40,10 +49,6 @@
 	CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
 
  	POINT_COLOR=RED;//设置字体为红色
-	LCD_ShowString(60,50,200,16,16,"WarShip STM32");
-	LCD_ShowString(60,70,200,16,16,"CAN TEST");
-	LCD_ShowString(60,90,200,16,16,"ATOM@ALIENTEK");
-	LCD_ShowString(60,110,200,16,16,"2015/1/15");
 	LCD_ShowString(60,130,200,16,16,"LoopBack Mode");
 	LCD_ShowString(60,150,200,16,16,"KEY0:Send WK_UP:Mode");//显示提示信息		
 	POINT_COLOR=BLUE;//设置字体为蓝色	  
@@ -59,7 +64,20 @@
 		if((USART_RX_STA&0x8000) && key==KEY0_PRES)
 		{
 			len=USART_RX_STA&0x3fff;   //得到此次接收到的数据长度
-			printf("\r\n您发送的消息为:\r\n\r\n");
+			printf("\r\n您发送的消息为:%d\r\n\r\n",len);  //  查看所谓数据长度是指字节数吗？
+
+			// 总共22个 存放在msg结构体中
+			if(len == 22){
+				msg->head1 = USART_RX_BUF[0];
+				msg->head2 = USART_RX_BUF[1];
+				msg->GPS_velocity = (float)USART_RX_BUF[2];
+				msg->AIM_velocity = (float)USART_RX_BUF[6];
+				msg->CarModel = USART_RX_BUF[10];
+				msg->BodyModel = USART_RX_BUF[12];
+				msg->Serial = USART_RX_BUF[14];
+				msg->SystemState = USART_RX_BUF[18];
+				msg->BrakeSingal = USART_RX_BUF[20];
+			}
 
 			for(i=0;i<8;i++)
 			{
