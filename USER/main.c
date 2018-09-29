@@ -68,7 +68,7 @@ struct COM{
 
 			// 总共22个 存放在msg结构体中
 			if(len == 22){
-				printf("\r\n成功");  //
+				printf("\r\n成功存放在msg中");
 
 				msg->head1 = USART_RX_BUF[0];
 				msg->head2 = USART_RX_BUF[1];
@@ -81,11 +81,10 @@ struct COM{
 				msg->BrakeSingal = (short int)USART_RX_BUF[20];
 			}
 
-			for(i=0;i<8;i++)
-			{
-				if(i<4)LCD_ShowxNum(60,210,msg->head2,3,16,0X80);	//显示数据
-				else LCD_ShowxNum(60,230,msg->head1,3,16,0X80);	//显示数据
-			}
+			LCD_ShowxNum(60,210,msg->head2,3,16,0X80);	//显示数据
+		 	LCD_ShowxNum(60,230,msg->head1,3,16,0X80);	//显示数据
+			USART_SendData(USART1, msg->head1);//向串口1发送数据
+
 
 			printf("\r\n\r\n");//插入换行
 			USART_RX_STA=0;
