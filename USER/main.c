@@ -6,8 +6,6 @@
 #include "usart.h"
 #include "can.h"
 
-typedef struct COM *Massage;
-
 struct COM{
 
 	unsigned char head1; // 0xAA   									1 byte
@@ -22,21 +20,18 @@ struct COM{
 	unsigned char end1;  // 回车										不用管
 	unsigned char end2;  // 换行
 
-};
-
+}msg;
 
 
  int main(void)
  {
  	// 必须在前面定义
-		u8 key;
+ 	u8 key;
 	u8 i=0,t=0;
 	u8 cnt=0;
 	u8 canbuf[8];  // u8是按照字节读入的  canbuf是个数组
 	u8 res;
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
-	Massage msg; // COM口传入的结构体指针
-
 
 	delay_init();	    	//延时函数初始化
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
@@ -44,7 +39,6 @@ struct COM{
 	LED_Init();		  		//初始化与LED连接的硬件接口
 	LCD_Init();			   	//初始化LCD	
 	KEY_Init();				//按键初始化		 	
-
 
 	CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
 
@@ -64,29 +58,29 @@ struct COM{
 		if((USART_RX_STA&0x8000) && key==KEY0_PRES)
 		{
 			len=USART_RX_STA&0x3fff;   //得到此次接收到的数据长度
-			printf("\r\n您发送的消息为:%d\r\n\r\n",len);  //  数据长度
+			printf("\r\n您发送的消息长度为: %d 位\r\n",len);  //  数据长度
 
 			// 总共22个 存放在msg结构体中
 			if(len == 22){
 				printf("\r\n成功存放在msg中");
 
-				msg->head1 = USART_RX_BUF[0];
-				msg->head2 = USART_RX_BUF[1];
-				msg->GPS_velocity = (float)USART_RX_BUF[2];
-				msg->AIM_velocity = (float)USART_RX_BUF[6];
-				msg->CarModel = (short int)USART_RX_BUF[10];
-				msg->BodyModel = (short int)USART_RX_BUF[12];
-				msg->Serial = (unsigned int)USART_RX_BUF[14];
-				msg->SystemState = (short int)USART_RX_BUF[18];
-				msg->BrakeSingal = (short int)USART_RX_BUF[20];
+				msg.head1 = USART_RX_BUF[0];
+				msg.head2 = USART_RX_BUF[1];
+				msg.GPS_velocity = (float)USART_RX_BUF[2];
+				msg.AIM_velocity = (float)USART_RX_BUF[6];
+				msg.CarModel = (short int)USART_RX_BUF[10];
+				msg.BodyModel = (short int)USART_RX_BUF[12];
+				msg.Serial = (unsigned int)USART_RX_BUF[14];
+				msg.SystemState = (short int)USART_RX_BUF[18];
+				msg.BrakeSingal = (short int)USART_RX_BUF[20];
 			}
 
-			LCD_ShowxNum(60,210,msg->head2,3,16,0X80);	//显示数据
-		 	LCD_ShowxNum(60,230,msg->head1,3,16,0X80);	//显示数据
-			USART_SendData(USART1, msg->head1);//向串口1发送数据
+			LCD_ShowxNum(60,210,msg.head2,3,16,0X80);	//显示数据
+		 	LCD_ShowxNum(60,230,msg.head1,3,16,0X80);	//显示数据
 
+			printf("\r\n您msg中的GPS_velocity为： %f\r\n",msg.GPS_velocity);  //  数据长度
+			printf("\r\n您msg中的AIM_velocity为： %f\r\n",msg.AIM_velocity);  //  数据长度
 
-			printf("\r\n\r\n");//插入换行
 			USART_RX_STA=0;
 
 			/**
@@ -125,8 +119,6 @@ struct COM{
 		/**
 		 * 像串口发送canbuf中的数据
 		 */
-
-
 
         if(key)//接收到有数据
 		{
