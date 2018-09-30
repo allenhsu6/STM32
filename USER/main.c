@@ -5,6 +5,9 @@
 #include "lcd.h"
 #include "usart.h"
 #include "can.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 struct COM{
 
@@ -22,6 +25,15 @@ struct COM{
 
 }msg;
 
+struct ToCom{
+
+    short int soc;          // 返回电量信号
+    float VCU_velocity;     // 返回车速
+    unsigned int pwm;       // 遥控器的全部信息
+    short int abnormal;     // 出现异常，向上传1
+
+}msgToCom;
+
 
  int main(void)
  {
@@ -32,6 +44,8 @@ struct COM{
 	u8 canbuf[8];  // u8是按照字节读入的  canbuf是个数组
 	u8 res;
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+
+	u8 temp[4] = {""};   // 用于临时存放拷贝数据
 
 	delay_init();	    	//延时函数初始化
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
@@ -62,13 +76,14 @@ struct COM{
 
 			// 总共22个 存放在msg结构体中
 			if(len == 22){
-				printf("\r\n成功存放在msg中");
-
 				msg.head1 = USART_RX_BUF[0];
 				msg.head2 = USART_RX_BUF[1];
 				msg.GPS_velocity = (float)USART_RX_BUF[2];
-				msg.AIM_velocity = (float)USART_RX_BUF[6];
-				msg.CarModel = (short int)USART_RX_BUF[10];
+                strncpy(temp, USART_RX_BUF+2, 4); // 从src 地址开始，往后四个
+                msg.GPS_velocity = atoi(temp);
+
+                msg.AIM_velocity = &USART_RX_BUF[6];
+                msg.CarModel = (short int)USART_RX_BUF[10];
 				msg.BodyModel = (short int)USART_RX_BUF[12];
 				msg.Serial = (unsigned int)USART_RX_BUF[14];
 				msg.SystemState = (short int)USART_RX_BUF[18];
@@ -78,7 +93,8 @@ struct COM{
 			LCD_ShowxNum(60,210,msg.head2,3,16,0X80);	//显示数据
 		 	LCD_ShowxNum(60,230,msg.head1,3,16,0X80);	//显示数据
 
-			printf("\r\n您msg中的GPS_velocity为： %f\r\n",msg.GPS_velocity);  //  数据长度
+            printf("\r\n成功存放在msg中");
+            printf("\r\n您msg中的GPS_velocity为： %f\r\n",msg.GPS_velocity);  //  数据长度
 			printf("\r\n您msg中的AIM_velocity为： %f\r\n",msg.AIM_velocity);  //  数据长度
 
 			USART_RX_STA=0;
@@ -117,7 +133,7 @@ struct COM{
 		key=Can_Receive_Msg(canbuf);  // 这个操作使得数据存放在canbuf中，并返回是否接受成功标志key
 
 		/**
-		 * 像串口发送canbuf中的数据
+		 * 向串口发送canbuf中的数据
 		 */
 
         if(key)//接收到有数据
