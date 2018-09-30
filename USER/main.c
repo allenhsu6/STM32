@@ -11,8 +11,8 @@
 
 struct COM{
 
-	unsigned char head1; // 0xAA   									1 byte
-	unsigned char head2; // 0x55
+	unsigned char head1; // 0x30   对应图形0	    					1 byte
+	unsigned char head2; // 0x31   对应图形1
 	float GPS_velocity; // gps返回的车辆当前真实速度，用以显示			4 byte
 	float AIM_velocity; // 通过计算得出的速度目标值					4 byte
 	short int CarModel; // 0：无人状态 1：有人状态 显示				2 byte
@@ -91,8 +91,8 @@ struct ToCom{
                 strncpy(temp, USART_RX_BUF+10, 2);
                 msg.CarModel = atoi(temp);
 
-                strncpy(temp, USART_RX_BUF+10, 2);
-                msg.CarModel = atoi(temp);
+                strncpy(temp, USART_RX_BUF+12, 2);
+                msg.BodyModel = atoi(temp);
 
                 strncpy(temp, USART_RX_BUF+14, 4);
                 msg.Serial = atoi(temp);
@@ -108,10 +108,17 @@ struct ToCom{
 		 	LCD_ShowxNum(60,230,msg.head1,3,16,0X80);	//显示数据
 
             printf("\r\n成功存放在msg中");
-            printf("\r\n您msg中的GPS_velocity为： %f\r\n",msg.GPS_velocity);  //  数据长度
-			printf("\r\n您msg中的AIM_velocity为： %f\r\n",msg.AIM_velocity);  //  数据长度
+            printf("\r\n您msg中的GPS_velocity为： %f\r\n",msg.GPS_velocity);
+			printf("\r\n您msg中的AIM_velocity为： %f\r\n",msg.AIM_velocity);
+            printf("\r\n您msg中的CarModel为： %d\r\n",    msg.CarModel);
+            printf("\r\n您msg中的BodyModel为： %d\r\n",   msg.BodyModel);
+            printf("\r\n您msg中的Serial为： %d\r\n",      msg.Serial);
+            printf("\r\n您msg中的SystemState为： %d\r\n", msg.SystemState);
+            printf("\r\n您msg中的BrakeSingle为： %d\r\n", msg.BrakeSingal);
 
-			USART_RX_STA=0;
+
+
+            USART_RX_STA=0;
 
 			/**
 			 * 将usartbuf中的数据发送给can端
