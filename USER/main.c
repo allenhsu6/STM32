@@ -23,7 +23,7 @@ struct COM{
 	unsigned char end1;  // 回车										不用管
 	unsigned char end2;  // 换行
 
-}msg;
+};
 
 struct ToCom{
 
@@ -32,19 +32,21 @@ struct ToCom{
     unsigned int pwm;       // 遥控器的全部信息
     short int abnormal;     // 出现异常，向上传1
 
-}msgToCom;
+};
 
 
  int main(void)
  {
  	// 必须在前面定义
  	u8 key;
-	u8 i=0,t=0;
+	u8 i=0,t=0,len=0;
 	u8 cnt=0;
 	u8 canbuf[8];  // u8是按照字节读入的  canbuf是个数组
 	u8 res;
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
 
+	struct COM msg;         // 从com来
+	struct ToCom msgToCom;  // 传回com
 	u8 temp[4] = {""};   // 用于临时存放拷贝数据
 
 	delay_init();	    	//延时函数初始化
@@ -78,16 +80,28 @@ struct ToCom{
 			if(len == 22){
 				msg.head1 = USART_RX_BUF[0];
 				msg.head2 = USART_RX_BUF[1];
-				msg.GPS_velocity = (float)USART_RX_BUF[2];
+				// msg.GPS_velocity = (float)USART_RX_BUF[2];
                 strncpy(temp, USART_RX_BUF+2, 4); // 从src 地址开始，往后四个
-                msg.GPS_velocity = atoi(temp);
+                msg.GPS_velocity = atof(temp);
 
-                msg.AIM_velocity = &USART_RX_BUF[6];
-                msg.CarModel = (short int)USART_RX_BUF[10];
-				msg.BodyModel = (short int)USART_RX_BUF[12];
-				msg.Serial = (unsigned int)USART_RX_BUF[14];
-				msg.SystemState = (short int)USART_RX_BUF[18];
-				msg.BrakeSingal = (short int)USART_RX_BUF[20];
+                //msg.AIM_velocity = &USART_RX_BUF[6];
+                strncpy(temp, USART_RX_BUF+6, 4);
+                msg.AIM_velocity = atof(temp);
+
+                strncpy(temp, USART_RX_BUF+10, 2);
+                msg.CarModel = atoi(temp);
+
+                strncpy(temp, USART_RX_BUF+10, 2);
+                msg.CarModel = atoi(temp);
+
+                strncpy(temp, USART_RX_BUF+14, 4);
+                msg.Serial = atoi(temp);
+
+                strncpy(temp, USART_RX_BUF+18, 2);
+                msg.SystemState = atoi(temp);
+
+                strncpy(temp, USART_RX_BUF+20, 2);
+                msg.BrakeSingal = atoi(temp);
 			}
 
 			LCD_ShowxNum(60,210,msg.head2,3,16,0X80);	//显示数据
