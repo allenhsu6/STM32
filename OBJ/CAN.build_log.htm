@@ -1,0 +1,64 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.14.0.0
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: ALLEN HSU, INTEL, LIC=BUUII-TDHHE-55HT2-9VAWD-70GQJ-WGN6T
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Standard  Version: 5.14.0.0
+Toolchain Path:  E:\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.05 update 1 (build 106)
+Assembler:       Armasm.exe V5.05 update 1 (build 106)
+Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
+Library Manager: ArmAr.exe V5.05 update 1 (build 106)
+Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
+CPU DLL:         SARMCM3.DLL V5.14.0.0
+Dialog DLL:      DARMSTM.DLL V1.65.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.13.0
+Dialog DLL:      TARMSTM.DLL V1.64.0.0
+ 
+<h2>Project:</h2>
+C:\Users\xuzhi\Documents\GitHub\STM32\USER\CAN.uvprojx
+Project File Date:  09/30/2018
+
+<h2>Output:</h2>
+Build target 'CAN'
+compiling key.c...
+..\HARDWARE\KEY\key.c(84): warning:  #223-D: function "LCD_ShowString_nobackwhite" declared implicitly
+    LCD_ShowString_nobackwhite(60-15,130,300,24,24,"2 English interface");      
+..\HARDWARE\KEY\key.c(108): warning:  #223-D: function "LCD_ShowString_nobackwhite" declared implicitly
+        LCD_ShowString_nobackwhite(60-15-5,70,300,24,24,"First Generation Car");
+..\HARDWARE\KEY\key.c(118): warning:  #223-D: function "LCD_ShowString_nobackwhite" declared implicitly
+        LCD_ShowString_nobackwhite(0,20,80,50,32,"SOC"); 
+..\HARDWARE\KEY\key.c(188): warning:  #223-D: function "LCD_ShowString_nobackwhite" declared implicitly
+        LCD_ShowString_nobackwhite(0,20,80,50,32,"SOC");    LCD_ShowString_nobackwhite(200,20,100,50,32,"%");
+..\HARDWARE\KEY\key.c(208): warning:  #187-D: use of "=" where "==" may have been intended
+        if(mode=1)
+..\HARDWARE\KEY\key.c(212): warning:  #187-D: use of "=" where "==" may have been intended
+    else if(mode=0)
+..\HARDWARE\KEY\key.c(216): warning:  #187-D: use of "=" where "==" may have been intended
+  if(state=1)
+..\HARDWARE\KEY\key.c(220): warning:  #187-D: use of "=" where "==" may have been intended
+  else if(state=0)
+..\HARDWARE\KEY\key.c: 8 warnings, 0 errors
+linking...
+..\OBJ\CAN.axf: Error: L6218E: Undefined symbol LCD_ShowString_nobackwhite (referred from key.o).
+..\OBJ\CAN.axf: Error: L6218E: Undefined symbol buf18f3 (referred from key.o).
+..\OBJ\CAN.axf: Error: L6218E: Undefined symbol buf18f5 (referred from key.o).
+..\OBJ\CAN.axf: Error: L6218E: Undefined symbol bufcan0x180 (referred from key.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 4 error messages.
+"..\OBJ\CAN.axf" - 4 Error(s), 8 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  C:\Users\xuzhi\Documents\GitHub\STM32\USER\RTE
+  E:\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+Target not created.
+</pre>
+</body>
+</html>

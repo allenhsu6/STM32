@@ -15,7 +15,7 @@ float  speed,rpm,soc,mode, state;
  u8 canbuf[8],canbuf_f0[8],canbuf_f1[8],canbuf_f2[8],canbuf_f3[8],canbuf_f4[8],canbuf_f5[8],canbuf_f6[8],canbuf_f7[8],canbuf8[8],bufid;
 //按键初始化函数
 u8 jjj=0;
-u8 msg[8];
+u8 msgg[8];
 extern u32 bufcan0x180[9];
 extern u8 buf18f3[8],buf18f5[8];
 void KEY_Init(void) //IO初始化
@@ -115,9 +115,12 @@ void first_generation_car_Open_interface_init(void)
 void first_generation_car_static(void)
 {
  POINT_COLOR=RED;
-	LCD_ShowString_nobackwhite(0,20,80,50,32,"SOC");    LCD_ShowString_nobackwhite(200,20,100,50,32,"%");
-	LCD_ShowString_nobackwhite(0,80,100,50,32,"Speed");  LCD_ShowString_nobackwhite(200,80,100,50,32,"km/h");
-	LCD_ShowString_nobackwhite(0,140,200,50,32,"Tachometer");  LCD_ShowString_nobackwhite(300,140,100,50,32,"r/min");
+	LCD_ShowString_nobackwhite(0,20,80,50,32,"SOC"); 
+	LCD_ShowString_nobackwhite(200,20,100,50,32,"%");
+	LCD_ShowString_nobackwhite(0,80,100,50,32,"Speed"); 
+	LCD_ShowString_nobackwhite(200,80,100,50,32,"km/h");
+	LCD_ShowString_nobackwhite(0,140,200,50,32,"Tachometer"); 
+	LCD_ShowString_nobackwhite(300,140,100,50,32,"r/min");
 	LCD_ShowString_nobackwhite(0,340,200,50,32,"Vehicle Mode");
 	LCD_ShowString_nobackwhite(0,400,220,50,32,"Unmanned State");
 }
@@ -160,9 +163,9 @@ void first_generation_car_interface_init(void)
 		}
 		
 	 
-		speed=msg[1];//0.6的分辨率 十进制输入
-     mode=msg[2];
-		state=msg[3];
+		speed=msgg[1];//0.6的分辨率 十进制输入
+     mode=msgg[2];
+		state=msgg[3];
 		rpm=buf18f3[6]*25;//25的分辨率 十进制输入
 		//battV=(buf18f5[0]+buf18f5[1]*256)*0.1;//电池电压can报文 0.1的分辨率
 	//	battI=(buf18f5[0]+buf18f5[1]*256)*0.1-400;//电池电流can报文
@@ -198,7 +201,7 @@ void first_generation_car_interface_init(void)
 		para2_flag=1;
 	 }
 	POINT_COLOR=RED;
-	LCD_ShowNum(100,80,(u32)msg,3,32);		
+	LCD_ShowNum(100,80,(u32)msgg,3,32);		
 	LCD_ShowNum(200,140,(u32)rpm,5,32);	
 	LCD_ShowNum(100,20,(u32)soc,3,32);//soc剩余电量
 	 
